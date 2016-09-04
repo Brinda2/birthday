@@ -1,0 +1,203 @@
+//MAINACTIVITY JAVA
+
+package com.example.birthdayreminder;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Toast;
+
+public class MainActivity extends Activity  implements OnClickListener {
+	Button b1,b2;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        b1=(Button) findViewById(R.id.showlist);
+        b2=(Button) findViewById(R.id.addbirthday);
+        b1.setOnClickListener(this);
+        b2.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch(arg0.getId())
+		{
+		case R.id.showlist:
+			Toast.makeText(this, " we will complete as soon as", Toast.LENGTH_LONG).show();
+                         break;
+		case R.id.addbirthday:
+			try{
+		            Intent i = new Intent(getApplicationContext(),createprofile.class);
+		            startActivity(i);
+			} catch(Exception e)
+			{
+				Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+		 break;
+	}
+    
+}
+}
+
+
+
+//CREATING PROFILE
+
+package com.example.birthdayreminder;
+
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class createprofile extends Activity  implements OnClickListener {
+	Button b1,b2;
+	EditText e1,e2,e3;
+	SQLiteDatabase db;
+	Intent i = null;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.createprofile);
+        b1 = (Button) findViewById(R.id.setdate);
+        b2 = (Button) findViewById(R.id.submit);
+        e1 = (EditText) findViewById(R.id.editText1);
+        e2 = (EditText) findViewById(R.id.editText2);
+        e3 = (EditText) findViewById(R.id.editText3);
+        b1.setOnClickListener(this);
+        b2.setOnClickListener(this);
+    }
+{
+
+}
+@Override
+public void onClick(View arg0) {
+	// TODO Auto-generated method stub
+	try {
+	switch(arg0.getId())
+	{
+	case R.id.setdate :
+		 i = new Intent(getApplicationContext(),datepicker.class);
+		i.putExtra("name",e1.getText().toString());
+		i.putExtra("age",e2.getText().toString());
+		i.putExtra("text",e3.getText().toString());
+		startActivity(i);
+		break;
+	case R.id.submit :
+		Bundle extras = getIntent().getExtras();  
+
+	    extras.getBundle("year"); 
+	    extras.getBundle("day");  
+	    extras.getBundle("month");
+	    extras.getBundle("name"); 
+	    extras.getBundle("age");  
+	    extras.getBundle("text"); 
+	    int year = extras.getInt("year");
+	    int day = extras.getInt("day");
+	    int month = extras.getInt("month"); 
+		String name = extras.getString("name");
+	    String age = extras.getString("age");
+	    String text = extras.getString("text");
+		e1.setText(name);
+		e2.setText(age);
+		e3.setText(text);
+		try {
+		if(name.equals("")&&(age.equals(""))&&text.equals(""))	
+		{
+			Toast.makeText(getApplicationContext(),"Please enter the name", Toast.LENGTH_LONG).show();
+		}
+		else 
+		{
+      
+        db=openOrCreateDatabase("PersonDB", Context.MODE_PRIVATE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS persons(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR,age VARCHAR,text VARCHAR,year VARCHAR,day VARCHAR,month VARCHAR);");
+        String query = "INSERT INTO persons (name,age,text,year,day,month) VALUES('"+name+"', '"+age+"','"+text+"','"+year+"','"+day+"','"+month+"');";
+        db.execSQL(query);
+        Toast.makeText(getApplicationContext(),"Saved Successfully", Toast.LENGTH_LONG).show();
+		}
+		} catch(Exception e) {
+			Toast.makeText(this,e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+		break;
+	}}
+	catch(Exception e) {
+		Toast.makeText(this,"Please ,Enter the value", Toast.LENGTH_LONG).show();
+	}
+	
+}
+}
+
+
+//DATEPICKER
+
+package com.example.birthdayreminder;
+
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.DatePicker;
+
+public class datepicker  extends Activity  implements OnClickListener {
+
+Button b1;
+DatePicker d1;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.datepicker);
+        d1 = (DatePicker) findViewById(R.id.datePicker1);
+        b1 = (Button) findViewById(R.id.next);
+        b1.setOnClickListener(this);
+ 
+        
+}
+@Override
+public void onClick(View arg0) {
+	// TODO Auto-generated method stub
+	Bundle extras = getIntent().getExtras();  
+
+    extras.getBundle("name"); 
+    extras.getBundle("age");  
+    extras.getBundle("text"); 
+    String name = extras.getString("name");
+    String age = extras.getString("age");
+    String text = extras.getString("text");
+	 Intent intent = new Intent(getApplicationContext(),createprofile.class);
+	 int month = d1.getMonth();  
+	 int day = d1.getDayOfMonth(); 
+	 int year = d1.getYear();
+	 intent.putExtra("name",name);  
+	 intent.putExtra("age",age);  
+	 intent.putExtra("text",text);
+     intent.putExtra("year",year);  
+	 intent.putExtra("month",month);  
+	 intent.putExtra("day",day);
+	 startActivity(intent);	
+}
+}
+
