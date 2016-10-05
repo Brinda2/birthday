@@ -38,7 +38,7 @@ public class MainActivity extends Activity{
 
   pickerDate.init(
     now.get(Calendar.YEAR), 
-    now.get(Calendar.MONTH), 
+    now.get(Calendar.MONTH),
     now.get(Calendar.DAY_OF_MONTH), 
     null);
   
